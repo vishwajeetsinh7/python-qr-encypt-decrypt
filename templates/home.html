@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome to {{ website_name }}</h1>
+    <form method="POST" action="/">
+        <label for="message">Enter Message:</label><br>
+        <input type="text" id="message" name="message"><br>
+        <label for="password">Enter Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Generate QR Code">
+    </form>
+    
+    {% if qr_image %}
+    <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code">
+    <br>
+    <a href="{{ url_for('decrypt') }}?encrypted_data={{ encrypted_data }}">Click here to decrypt</a>
+    {% endif %}
+</body>
+</html>

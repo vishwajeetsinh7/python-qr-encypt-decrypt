@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decrypt Form</title>
+</head>
+<body>
+    <h1>Decrypt Message</h1>
+    <form method="POST" action="/decrypt">
+        <input type="hidden" name="encrypted_data" value="{{ encrypted_data }}">
+        <label for="password">Enter Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Decrypt Message">
+    </form>
+
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% endif %}
+</body>
+</html>

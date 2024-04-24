@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decrypt</title>
+</head>
+<body>
+    <h1>Decrypt Message</h1>
+    
+    <form method="post" action="/decrypt" onsubmit="return validateForm()">
+        <input type="hidden" name="encrypted_data" value="{{ encrypted_data }}">
+        <label for="password">Enter Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Decrypt Message">
+    </form>
+    
+    {% if decrypted_message %}
+    <p>{{ decrypted_message }}</p>
+    {% endif %}
+    
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% endif %}
+
+    <script>
+        function validateForm() {
+            // Add any form validation logic here
+            return true; // or false to prevent form submission
+        }
+    </script>
+</body>
+</html>
