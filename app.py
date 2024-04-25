@@ -4,6 +4,7 @@ from Crypto.Util.Padding import unpad, pad
 from Crypto.Protocol.KDF import PBKDF2
 import base64
 import os
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -36,11 +37,17 @@ def home():
 def redirect_to_website():
     return redirect(url_for('home'), code=302)
 
+# Define a global variable to track incorrect password attempts
+incorrect_attempts = 0
+
 @app.route('/decrypt', methods=['GET', 'POST'])
 def decrypt():
+    global incorrect_attempts
+
     if request.method == 'GET':
         encrypted_data_hex = request.args.get('encrypted_data', '')
         return render_template('decrypt_form.html', encrypted_data=encrypted_data_hex)
+
     elif request.method == 'POST':
         encrypted_data_hex = request.form['encrypted_data']
         password = request.form['password']
@@ -55,10 +62,26 @@ def decrypt():
         try:
             cipher = AES.new(key, AES.MODE_CBC, iv)
             decrypted_message = unpad(cipher.decrypt(ciphertext), AES.block_size).decode('utf-8')
+            # Reset incorrect attempts counter if the password is correct
+            incorrect_attempts = 0
             return render_template('decrypted.html', decrypted_message=decrypted_message)
+
+
         except ValueError:
-            error_message = "Wrong password entered. Please try again."
-            return render_template('decrypt_form.html', error_message=error_message)
+            # Increment the incorrect attempts counter
+            incorrect_attempts += 1
+            # Determine the remaining attempts
+            remaining_attempts = 4 - incorrect_attempts
+            # Check if remaining attempts are available
+            if remaining_attempts > 0:
+                error_message = f"Wrong password entered. {remaining_attempts} attempt(s) left. Please try again."
+                # return render_template('decrypt_form.html', error_message=error_message)
+                return jsonify({'error_message': error_message}), 400
+
+            else:
+                # Redirect to the homepage after 3 incorrect attempts
+                incorrect_attempts = 0  # Reset the attempts counter
+                return redirect(url_for('home'))
 
 def generate_qr_code(decryption_url, encoded_data):
     import qrcode
